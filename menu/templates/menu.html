@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load mptt_tags %}
+{% block title %}Список {% endblock %}
+{% block content %}
+{{menu_items}}
+{{menu_item_item}}
+
+{{children}}
+<div>
+    <div>
+	<ul>
+	{% recursetree menu_items %}
+
+    <li>
+
+            <span style="flex: 1 1 auto;">{{ node.name }}</span>
+            {% if not node.is_leaf_node %}
+            <span>&nbsp;</span><span class="fa fa-angle-right"></span>
+            {% endif %}
+
+        {% if not node.is_leaf_node %}
+            <ul  class="site_nav_primary__submenu ul__column white_box">
+                {{ children }}
+            </ul>
+        {% endif %}
+    </li>
+
+	{% endrecursetree %}
+	</ul>
+    </div>
+</div>
+
+{{ menu_items }}
+<ul class="menu">
+    {% recursetree menu_items %}
+
+        {% for m_item in menu_items %}
+            {% for mm_item in menu_item_item %}
+                {% if m_item.id == mm_item.parent_id %}
+
+                     <li><a href="{{ m_item.url}}">{{ m_item.name}}</a></li>
+
+                       <li><a href="{% url 'menu:detail' mm_item.pk %}">{{ mm_item.name}}</a></li>
+                    {% endif %}}
+                {% if not node.is_leaf_node %}
+
+                    {{ children }}
+                 {% endif %}
+            {% endfor %}
+        {% endfor %}
+
+
+                <ul class="children">
+            {% if not node.is_leaf_node %}
+
+                    {{ children }}
+                </ul>
+            {% endif %}
+
+    {% endrecursetree %}
+
+
+</ul>
+
+<h3>Menu</h3>
+{% load mptt_tags %}
+<ul>
+    {% recursetree menu_items %}
+        <li>
+            <a href="/menu/{{ node.id }}/">
+            {{ node.name }}
+            {{ node.id }}
+            {{ node.level }}
+                {{node.is_leaf_node}}
+                {% for i in node.sss.name%}
+                {{i}}
+                {% endfor %}
+                </a>
+                {% if node.is_root_node %}
+
+                {% else %}
+                    {% if not node.is_leaf_node %}
+                        {% if current_menu.id == node.id %}
+                            <ul class="children">
+                                {{ children }}
+                            </ul>
+                        {% elif node.level < current_menu.level %}
+                            <ul class="children">
+                                {{ children }}
+                            </ul>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </li>
+    {% endrecursetree %}
+</ul>
+{% endblock %}
